@@ -36,18 +36,8 @@ class DataRoller:
 		for col in extra_cols:
 			self.__data = self.__data.drop(col, 1)
 
-	def run(self):
-		self.__load_file()
 
-		#If no rollup target identified, use all columns
-		if self.__rollup_target == None:
-			self.__rollup_target = list(self.__data.columns)
-			self.__rollup_target.remove(self.__value_key)
-			#TODO: Do we need to worry about order?
-
-		self.__cleanup()
-
-
+	def __create_aggregated_groups(self):
 		#Create groups to iterate over
 		for idx in range(len(self.__rollup_target) + 1):
 			target_grp_cols = self.__rollup_target[:len(self.__rollup_target)-idx]
@@ -69,6 +59,21 @@ class DataRoller:
 					rol[self.__value_key] = row[self.__value_key]
 					print (rol)
 					self.__result.append(rol)
+
+	def run(self):
+		self.__load_file()
+
+		#If no rollup target identified, use all columns
+		if self.__rollup_target == None:
+			self.__rollup_target = list(self.__data.columns)
+			self.__rollup_target.remove(self.__value_key)
+			#TODO: Do we need to worry about order?
+
+		self.__cleanup()
+		self.__create_aggregated_groups()
+
+
+		
 
 
 def main():
