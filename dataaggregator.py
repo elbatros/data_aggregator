@@ -21,10 +21,25 @@ class DataRoller:
 			lineterminator=self.__input_file_lineterminator, header='infer')
 		#TODO: Handle empty file
 
+	def __cleanup(self):
+
+		# Identify columns that we don't need
+		extra_cols = list(set(list(self.__data.columns))^set(self.__rollup_target)) 
+		
+		# If the value key is not present. We may have parsed incorrectly. We can't go any further, so quit
+		if self.__value_key not in extra_cols: 
+			print ('ERROR: Unable to find "value" column in provided data') 
+			exit(1)
+
+		# Delete extra columns
+		extra_cols.remove(self.__value_key) # Don't delete the value column
+		for col in extra_cols:
+			self.__data = self.__data.drop(col, 1)
+
 	def run(self):
 		self.__load_file()
-		
-		#TODO Remove extra columns
+		self.__cleanup()
+
 		#TODO handle no rollup_target passed
 
 
