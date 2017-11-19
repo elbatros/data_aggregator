@@ -5,6 +5,16 @@ import copy
 
 #TODO: Can the value key not be "value"
 class DataAggregator:
+	"""DataAggregator class that will contain multiple aggregation functionalities
+
+    Class only supports RollUp functionality
+
+    Args:
+        input_file (:obj:'file'): Input file with data to parse. Last column must be 'value' (unless overridden).
+        value_key (:obj:`str`, optional): An override for the value column name.
+        delimiter (:obj:`str`, optional): An overide for the input file delimiter
+        lineterminator (:obj:`str`, optional): An overide for the input file lineterminator
+    """
 	def __init__(self, input_file, value_key = 'value', \
 				 delimiter = '\t', lineterminator = '\n'):
 		
@@ -15,6 +25,11 @@ class DataAggregator:
 		self.__result = []
 
 	def __load_file(self):
+		"""Loads input_file
+
+		Args:
+			None
+		"""
 		try:
 			self.__data = pd.read_csv(self.__input_file, delimiter=self.__input_file_delimiter,\
 				lineterminator=self.__input_file_lineterminator, header='infer')
@@ -29,6 +44,12 @@ class DataAggregator:
 		exit(1)
 
 	def __remove_cols(self, target_cols):
+		"""Removes specific columns from loaded data
+			Returns a shallow copy of the modified data
+
+		Args:
+			target_cols (list): Columns to be deleted.
+		"""
 		buff_data = copy.copy(self.__data)
 
 		for col in target_cols:
@@ -37,6 +58,15 @@ class DataAggregator:
 
 
 	def __create_aggregated_groups(self, data, aggregation_groups, aggregation_type):
+		"""Aggregates data based on aggregation groups and aggregation type
+			Returns a list of dictionary of aggregated values
+
+		Args:
+			data (data_frame object): Data to be aggregated.
+			aggregation_groups (list): Group indexes
+			aggregation_type (str): Data frame aggregation types ('min', 'max', 'sum', 'mean')
+		"""
+
 		results = []
 		#Create groups to iterate over
 		for idx in range(len(aggregation_groups) + 1):
@@ -60,6 +90,12 @@ class DataAggregator:
 		return results
 
 	def rollup(self, rollup_target = []):
+		""" Rolls up input data based on rollup_target
+
+		Args:
+			rollup_target(list): Columns to be rolled on
+
+		"""
 		self.__load_file()
 
 		#If no rollup target identified, use all columns
@@ -90,13 +126,26 @@ class DataAggregator:
 
 
 
-
 class RolledData:
+	""" Class to contain rolled data
+
+	Args:
+		data (list): List of dictionary items
+		keys(list): Columns names
+	"""
 	def __init__(self, data, keys):
 		self.__data = data
 		self.__keys = keys
 
+
 	def save(self, file_name, delimiter = '\t', lineterminator = '\n'):
+		"""Saves rolled data to file
+
+		Args
+			file_name (str): Output file
+			delimiter (:obj:`str`, optional): An overide for the input file delimiter
+        	lineterminator (:obj:`str`, optional): An overide for the input file lineterminator
+		"""
 		with open(file_name, 'wb') as output_file:
 			dict_writer = csv.DictWriter(output_file, self.__keys, \
 				delimiter= delimiter, \
