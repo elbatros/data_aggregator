@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 import sys
-
+import copy
 
 #TODO: Can the value key not be "value"
 class DataAggregator:
@@ -12,7 +12,6 @@ class DataAggregator:
 		self.__value_key = value_key 				
 		self.__input_file_delimiter = delimiter
 		self.__input_file_lineterminator = lineterminator
-		self.__data = None
 		self.__result = []
 
 	def __load_file(self):
@@ -30,12 +29,14 @@ class DataAggregator:
 		exit(1)
 
 	def __remove_cols(self, target_cols):
+		buff_data = copy.copy(self.__data)
 
 		for col in target_cols:
-			self.__data = self.__data.drop(col, 1)
+			buff_data = buff_data.drop(col, 1)
+		return buff_data
 
 
-	def __create_aggregated_groups(self, aggregation_groups, aggregation_type):
+	def __create_aggregated_groups(self, data, aggregation_groups, aggregation_type):
 		results = []
 		#Create groups to iterate over
 		for idx in range(len(aggregation_groups) + 1):
@@ -43,11 +44,11 @@ class DataAggregator:
 
 			rol = {}
 			if len(target_grp_cols) == 0:
-				rol[self.__value_key] = self.__data.agg(aggregation_type)[self.__value_key]
+				rol[self.__value_key] = data.agg(aggregation_type)[self.__value_key]
 				results.append(rol)
 			else:
 				# Group by target_grp_cols and calculate sum
-				grouped_df = self.__data.groupby(target_grp_cols).agg(aggregation_type)
+				grouped_df = data.groupby(target_grp_cols).agg(aggregation_type)
 				for grp_idx, row in grouped_df.iterrows():
 					if len(target_grp_cols) == 1: #Special case when only grouped by a single column. grp_idx is not a tuple
 						rol = {target_grp_cols[0]: grp_idx} 
@@ -77,10 +78,10 @@ class DataAggregator:
 
 		# Delete extra columns
 		extra_cols.remove(self.__value_key) # Don't delete the value column
-		self.__remove_cols(extra_cols)
+		clean_data = self.__remove_cols(extra_cols)
 
 		# Run
-		rolled_data = self.__create_aggregated_groups(rollup_target, 'sum')
+		rolled_data = self.__create_aggregated_groups(clean_data, rollup_target, 'sum')
 		keys = rollup_target
 		keys.append(self.__value_key)
 
@@ -108,7 +109,7 @@ class RolledData:
 def main(input_file,  rollup_target):
 	data_aggregator = DataAggregator(input_file)
 	rolled_data = data_aggregator.rollup(rollup_target)
-	rolled_data.save('out.txt')
+	rolled_data.save('out.txt', lineterminator='\r\n')
 
 if __name__ == '__main__':
 	input_file = sys.stdin
