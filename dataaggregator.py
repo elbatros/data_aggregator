@@ -78,7 +78,7 @@ class DataRoller:
 		self.__load_file()
 
 		#If no rollup target identified, use all columns
-		if self.__rollup_target == None:
+		if self.__rollup_target == []:
 			self.__rollup_target = list(self.__data.columns)
 			self.__rollup_target.remove(self.__value_key)
 			#TODO: Do we need to worry about order?
