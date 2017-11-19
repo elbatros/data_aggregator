@@ -1,7 +1,10 @@
 import pandas as pd
 import csv
+import sys
+import fileinput
 
-VALUE_KEY = 'value\r' #TODO remove \r
+
+VALUE_KEY = 'value' #TODO remove \r
 rollup_target = None#['y','m','d']
 
 #TODO: Can the value key not be "value"
@@ -93,9 +96,13 @@ class DataRoller:
 			dict_writer.writerows(self.__result)
 
 
-def main():
-	data_roller = DataRoller('input02.txt', rollup_target)
+def main(input_file,  rollup_target):
+	data_roller = DataRoller(input_file, rollup_target)
 	data_roller.run()
 	data_roller.save_to_file('out.txt')
+
 if __name__ == '__main__':
-	main()
+	input_file = sys.stdin
+	rollup_target = sys.argv[1:]
+
+	main(input_file,  rollup_target)
