@@ -1,5 +1,6 @@
+import pandas as pd
 
-VALUE_KEY = 'value'
+VALUE_KEY = 'value\r'
 rollup_target = ['y','m','d']
 
 
@@ -14,8 +15,8 @@ class DataRoller:
 		self.__result = None
 
 	def __load_file(self):
-		#TODO
-		None
+		self.__data = pd.read_csv(self.__input_file, delimiter=self.__input_file_delimiter,\
+			lineterminator=self.__input_file_lineterminator, header='infer')
 
 	def run(self):
 		self.__load_file()
