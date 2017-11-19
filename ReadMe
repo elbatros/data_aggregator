@@ -1,0 +1,10 @@
+Dependencies:
+	Pandas
+	CSV
+
+Running:
+	./dataaggregator.py [rollup columns space separated ] < input_file
+
+	example:
+		dataaggregator.py < input02.txt
+		dataaggregator.py alpha beta < input02.txt

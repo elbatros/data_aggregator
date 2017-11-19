@@ -1,0 +1,5 @@
+alpha	beta	value
+9	0	764
+f	c	71
+f	c	494
+8	e	281
