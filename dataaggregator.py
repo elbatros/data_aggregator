@@ -3,7 +3,6 @@ import csv
 import sys
 import copy
 
-#TODO: Can the value key not be "value"
 class DataAggregator:
 	"""DataAggregator class that will contain multiple aggregation functionalities
 
@@ -158,7 +157,7 @@ class RolledData:
 def main(input_file,  rollup_target):
 	data_aggregator = DataAggregator(input_file)
 	rolled_data = data_aggregator.rollup(rollup_target)
-	rolled_data.save('out.txt', lineterminator='\r\n')
+	rolled_data.save('out.txt')
 
 if __name__ == '__main__':
 	input_file = sys.stdin
