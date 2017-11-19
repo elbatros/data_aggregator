@@ -78,22 +78,37 @@ class DataAggregator:
 			self.__rollup_target.remove(self.__value_key)
 
 		self.__cleanup()
-		self.__result = self.__create_aggregated_groups('sum')
 
-	def save_result(self, file_name):
+		# Run
+		rolled_data = self.__create_aggregated_groups('sum')
+		keys = self.__rollup_target
+		keys.append(self.__value_key)
+
+		#Return RolledData object
+		return(RolledData(rolled_data, keys))
+
+
+
+
+class RolledData:
+	def __init__(self, data, keys):
+		self.__data = data
+		self.__keys = keys
+
+	def save(self, file_name, delimiter = '\t', lineterminator = '\n'):
 		with open(file_name, 'wb') as output_file:
-			keys = self.__rollup_target
-			keys.append(self.__value_key)
-			dict_writer = csv.DictWriter(output_file,  keys, delimiter=self.__input_file_delimiter,\
-				lineterminator=self.__input_file_lineterminator)
+			dict_writer = csv.DictWriter(output_file, self.__keys, \
+				delimiter= delimiter, \
+				lineterminator= lineterminator)
+
 			dict_writer.writeheader()
-			dict_writer.writerows(self.__result)
+			dict_writer.writerows(self.__data)
 
 
 def main(input_file,  rollup_target):
-	data_roller = DataAggregator(input_file, rollup_target)
-	data_roller.rollup()
-	data_roller.save_result('out.txt')
+	data_aggregator = DataAggregator(input_file, rollup_target)
+	rolled_data = data_aggregator.rollup()
+	rolled_data.save('out.txt')
 
 if __name__ == '__main__':
 	input_file = sys.stdin
