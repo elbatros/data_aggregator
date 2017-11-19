@@ -58,7 +58,6 @@ class DataRoller:
 			rol = {}
 			if len(target_grp_cols) == 0:
 				rol[self.__value_key] = self.__data.agg(self.__aggregation_type)[self.__value_key]
-				print (rol)
 				self.__result.append(rol)
 			else:
 				# Group by target_grp_cols and calculate sum
@@ -70,7 +69,6 @@ class DataRoller:
 						rol = {target_grp_cols[i]: grp_idx[i] for i in range(len(target_grp_cols))}
 
 					rol[self.__value_key] = row[self.__value_key]
-					print (rol)
 					self.__result.append(rol)
 
 	def run(self):
@@ -93,9 +91,6 @@ class DataRoller:
 				lineterminator=self.__input_file_lineterminator)
 			dict_writer.writeheader()
 			dict_writer.writerows(self.__result)
-
-
-		
 
 
 def main():
