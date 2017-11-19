@@ -6,7 +6,7 @@ rollup_target = None#['y','m','d']
 
 class DataRoller:
 	def __init__(self, input_file, rollup_target, value_key = VALUE_KEY, \
-			aggregation_type = 'mean', delimiter = '\t', lineterminator = '\n'):
+			aggregation_type = 'sum', delimiter = '\t', lineterminator = '\n'):
 		
 		self.__input_file = input_file
 		self.__rollup_target = rollup_target 		
@@ -19,9 +19,18 @@ class DataRoller:
 		self.__aggregation_type = aggregation_type 
 
 	def __load_file(self):
-		self.__data = pd.read_csv(self.__input_file, delimiter=self.__input_file_delimiter,\
-			lineterminator=self.__input_file_lineterminator, header='infer')
-		#TODO: Handle empty file
+		try:
+			self.__data = pd.read_csv(self.__input_file, delimiter=self.__input_file_delimiter,\
+				lineterminator=self.__input_file_lineterminator, header='infer')
+			return
+			
+		except NameError:
+			print ("File Not Found. ({})".format(self.__input_file)) 
+		except Exception, e:
+			print ("Error in reading ({})".format(self.__input_file))
+			print (e)
+		
+		exit(1)
 
 	def __cleanup(self):
 
