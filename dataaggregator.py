@@ -94,7 +94,7 @@ class DataRoller:
 
 
 def main():
-	data_roller = DataRoller('input01.txt', rollup_target)
+	data_roller = DataRoller('input02.txt', rollup_target)
 	data_roller.run()
 	data_roller.save_to_file('out.txt')
 if __name__ == '__main__':
