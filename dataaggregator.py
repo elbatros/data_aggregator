@@ -1,7 +1,7 @@
 import pandas as pd
 
 VALUE_KEY = 'value\r' #TODO remove \r
-rollup_target = ['y','m','d']
+rollup_target = None#['y','m','d']
 
 
 class DataRoller:
@@ -38,9 +38,14 @@ class DataRoller:
 
 	def run(self):
 		self.__load_file()
-		self.__cleanup()
 
-		#TODO handle no rollup_target passed
+		#If no rollup target identified, use all columns
+		if self.__rollup_target == None:
+			self.__rollup_target = list(self.__data.columns)
+			self.__rollup_target.remove(self.__value_key)
+			#TODO: Do we need to worry about order?
+
+		self.__cleanup()
 
 
 		#Create groups to iterate over
