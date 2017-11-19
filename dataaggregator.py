@@ -5,11 +5,10 @@ import sys
 
 #TODO: Can the value key not be "value"
 class DataAggregator:
-	def __init__(self, input_file, rollup_target, value_key = 'value', \
+	def __init__(self, input_file, value_key = 'value', \
 				 delimiter = '\t', lineterminator = '\n'):
 		
 		self.__input_file = input_file
-		self.__rollup_target = rollup_target 		
 		self.__value_key = value_key 				
 		self.__input_file_delimiter = delimiter
 		self.__input_file_lineterminator = lineterminator
@@ -30,27 +29,17 @@ class DataAggregator:
 		
 		exit(1)
 
-	def __cleanup(self):
+	def __remove_cols(self, target_cols):
 
-		# Identify columns that we don't need
-		extra_cols = list(set(list(self.__data.columns))^set(self.__rollup_target)) 
-		
-		# If the value key is not present. We may have parsed incorrectly. We can't go any further, so quit
-		if self.__value_key not in extra_cols: 
-			print ('ERROR: Unable to find "value" column in provided data') 
-			exit(1)
-
-		# Delete extra columns
-		extra_cols.remove(self.__value_key) # Don't delete the value column
-		for col in extra_cols:
+		for col in target_cols:
 			self.__data = self.__data.drop(col, 1)
 
 
-	def __create_aggregated_groups(self, aggregation_type):
+	def __create_aggregated_groups(self, aggregation_groups, aggregation_type):
 		results = []
 		#Create groups to iterate over
-		for idx in range(len(self.__rollup_target) + 1):
-			target_grp_cols = self.__rollup_target[:len(self.__rollup_target)-idx]
+		for idx in range(len(aggregation_groups) + 1):
+			target_grp_cols = aggregation_groups[:len(aggregation_groups)-idx]
 
 			rol = {}
 			if len(target_grp_cols) == 0:
@@ -69,19 +58,30 @@ class DataAggregator:
 					results.append(rol)
 		return results
 
-	def rollup(self):
+	def rollup(self, rollup_target = []):
 		self.__load_file()
 
 		#If no rollup target identified, use all columns
-		if self.__rollup_target == []:
-			self.__rollup_target = list(self.__data.columns)
-			self.__rollup_target.remove(self.__value_key)
+		if rollup_target == []:
+			rollup_target = list(self.__data.columns)
+			rollup_target.remove(self.__value_key)
 
-		self.__cleanup()
+
+		# Identify columns that we don't need
+		extra_cols = list(set(list(self.__data.columns))^set(rollup_target)) 
+		
+		# If the value key is not present. We may have parsed incorrectly. We can't go any further, so quit
+		if self.__value_key not in extra_cols: 
+			print ('ERROR: Unable to find "value" column in provided data') 
+			exit(1)
+
+		# Delete extra columns
+		extra_cols.remove(self.__value_key) # Don't delete the value column
+		self.__remove_cols(extra_cols)
 
 		# Run
-		rolled_data = self.__create_aggregated_groups('sum')
-		keys = self.__rollup_target
+		rolled_data = self.__create_aggregated_groups(rollup_target, 'sum')
+		keys = rollup_target
 		keys.append(self.__value_key)
 
 		#Return RolledData object
@@ -106,8 +106,8 @@ class RolledData:
 
 
 def main(input_file,  rollup_target):
-	data_aggregator = DataAggregator(input_file, rollup_target)
-	rolled_data = data_aggregator.rollup()
+	data_aggregator = DataAggregator(input_file)
+	rolled_data = data_aggregator.rollup(rollup_target)
 	rolled_data.save('out.txt')
 
 if __name__ == '__main__':
