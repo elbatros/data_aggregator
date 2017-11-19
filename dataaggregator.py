@@ -5,16 +5,18 @@ rollup_target = None#['y','m','d']
 
 
 class DataRoller:
-	def __init__(self, input_file, rollup_target, value_key = VALUE_KEY, delimiter = '\t', lineterminator = '\n'):
+	def __init__(self, input_file, rollup_target, value_key = VALUE_KEY, \
+			aggregation_type = 'mean', delimiter = '\t', lineterminator = '\n'):
+		
 		self.__input_file = input_file
-
-		self.__rollup_target = rollup_target 		#TODO handle no rollup_target passed
+		self.__rollup_target = rollup_target 		
 
 		self.__value_key = value_key 				#TODO: Can the value key not be value
 		self.__input_file_delimiter = delimiter
 		self.__input_file_lineterminator = lineterminator
 		self.__data = None
 		self.__result = []
+		self.__aggregation_type = aggregation_type 
 
 	def __load_file(self):
 		self.__data = pd.read_csv(self.__input_file, delimiter=self.__input_file_delimiter,\
@@ -44,12 +46,12 @@ class DataRoller:
 
 			rol = {}
 			if len(target_grp_cols) == 0:
-				rol[self.__value_key] = self.__data.sum()[self.__value_key]
+				rol[self.__value_key] = self.__data.agg(self.__aggregation_type)[self.__value_key]
 				print (rol)
 				self.__result.append(rol)
 			else:
 				# Group by target_grp_cols and calculate sum
-				grouped_df = self.__data.groupby(target_grp_cols).sum()
+				grouped_df = self.__data.groupby(target_grp_cols).agg(self.__aggregation_type)
 				for grp_idx, row in grouped_df.iterrows():
 					if len(target_grp_cols) == 1: #Special case when only grouped by a single column. grp_idx is not a tuple
 						rol = {target_grp_cols[0]: grp_idx} 
