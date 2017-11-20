@@ -19,5 +19,9 @@ Installation:
 	2. Install pandas
 		pip install pandas
 	3. Checkout source code
-		git clone https://bitbucket.org/hashemraslan/sortable_dataaggregator.git     
+		git clone https://bitbucket.org/hashemraslan/sortable_dataaggregator.git
+	4. Mark as executable
+		 chmod +x dataaggregator.py
+	5. Run
+		dataaggregator.py < input02.txt
 
