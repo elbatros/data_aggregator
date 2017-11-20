@@ -8,3 +8,16 @@ Running:
 	example:
 		dataaggregator.py < input02.txt
 		dataaggregator.py alpha beta < input02.txt
+
+
+
+Installation:
+	1. Install Python and pip
+		sudo apt-get updates
+		sudo apt-get install python2.7
+		sudo apt-get python-pip
+	2. Install pandas
+		pip install pandas
+	3. Checkout source code
+		git clone https://bitbucket.org/hashemraslan/sortable_dataaggregator.git     
+

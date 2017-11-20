@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+"""
+	@about: Loads a file and performs rollup operation
+	@author: Hashem.Raslan@gmail.com
+"""
+
 import pandas as pd
 import csv
 import sys
